@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Vilmate's test task</title>
+    <style>
+      .box {
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid black;
+        border-radius: 2px;
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script>
+      // Трактовка переміщення - переміщення відбується вставленням, а не заміною
+      const nodes = [];
+      const nodesAmount = 100;
+
+      const generateNodes = () => {
+        for (let i = 0; i < nodesAmount; i++) {
+          //generate divs
+          const div = document.createElement("div");
+          div.classList.add("box");
+          div.innerText = i + 1;
+          div.addEventListener("click", onMoveDiv);
+
+          nodes.push({
+            div,
+            originalIndex: i,
+            clickedOnce: false,
+          });
+        }
+        updateContainer(nodes);
+      };
+
+      const onMoveDiv = (event) => {
+        const container = document.getElementById("container");
+        const div = event.target;
+
+        const currentIndex = Array.from(container.children).indexOf(div);
+        const clickedNode = nodes[currentIndex];
+
+        if (!clickedNode.clickedOnce) {
+          nodes[currentIndex].clickedOnce = true;
+          //move at start
+          nodes.unshift(clickedNode);
+          nodes.splice(currentIndex + 1, 1);
+        } else {
+          nodes[currentIndex].clickedOnce = false;
+          //insert at original position
+          nodes.splice(currentIndex, 1);
+          nodes.splice(clickedNode.originalIndex, 0, clickedNode);
+        }
+
+        updateContainer(nodes);
+      };
+
+      const updateContainer = (nodes) => {
+        const container = document.getElementById("container");
+        container.innerHTML = "";
+        nodes.forEach((node) => container.appendChild(node.div));
+      };
+
+      //generate nodes on page load
+      document.addEventListener("DOMContentLoaded", generateNodes);
+    </script>
+  </body>
+</html>
